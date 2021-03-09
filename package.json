@@ -1,0 +1,19 @@
+{
+  "name": "natours",
+  "version": "1.0.0",
+  "description": "Learning node, express and MongoDB",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx nodemon server.js"
+  },
+  "keywords": [],
+  "author": "John Constant",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
