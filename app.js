@@ -12,14 +12,14 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
-app.use((req, res, next) => {
-  console.log('Hi from your custom middleware');
-  next();
-});
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log('Hi from your custom middleware');
+//   next();
+// });
+// app.use((req, res, next) => {
+//   req.requestTime = new Date().toISOString();
+//   next();
+// });
 
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createATour);
