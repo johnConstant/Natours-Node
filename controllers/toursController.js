@@ -51,6 +51,7 @@ exports.createATour = async (req, res) => {
       status: 'fail',
       message: 'Invalid data sent!',
     });
+    console.log(err);
   }
 };
 
@@ -127,7 +128,7 @@ exports.getTourStats = async (req, res) => {
         },
       },
       {
-        sort: {
+        $sort: {
           avgPrice: 1,
         },
       },
@@ -144,6 +145,7 @@ exports.getTourStats = async (req, res) => {
       status: 'fail',
       message: err,
     });
+    console.log(err);
   }
 };
 
