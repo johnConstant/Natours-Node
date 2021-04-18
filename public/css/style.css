@@ -144,7 +144,7 @@ body {
 .heading-tertirary {
   color: #fff;
   text-transform: uppercase;
-  font-weight: 300;
+  font-weight: 700;
 }
 .heading-primary span,
 .heading-tertirary span {
@@ -156,13 +156,13 @@ body {
     linear,
     left top,
     right bottom,
-    from(rgba(125, 213, 111, 0.85)),
-    to(rgba(40, 180, 135, 0.85))
+    from(rgba(153, 153, 153, 0.1)),
+    to(rgba(0, 0, 0, 1))
   );
   background-image: linear-gradient(
     to bottom right,
-    rgba(125, 213, 111, 0.85),
-    rgba(40, 180, 135, 0.85)
+    rgba(53, 53, 53, 0.1),
+    rgba(0, 0, 0, 1)
   );
 }
 
@@ -199,8 +199,25 @@ body {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   /*Add later when we use this for the button in form*/
-  border: none;
+  border: 2px solid;
   cursor: pointer;
+}
+  .btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    margin: -$border; /* !importanté */
+    border-radius: inherit; /* !importanté */
+    background-image: linear-gradient(
+      109.6deg,
+      rgba(116, 18, 203, 1) 11.2%,
+      rgba(230, 46, 131, 1) 91.2%
+    );
+  }
 }
 
 .btn:hover {
@@ -1100,22 +1117,22 @@ body {
 }
 .card__picture {
   position: relative;
-  -webkit-clip-path: polygon(0 0, 100% 0%, 100% 83%, 0% 98%);
-  clip-path: polygon(0 0, 100% 0%, 100% 83%, 0% 98%);
+  -webkit-clip-path: polygon(0 0, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
+  clip-path: polygon(0 0, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
   height: 22rem;
 }
 .card__picture-overlay {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: -webkit-gradient(
+  /* background-image: -webkit-gradient(
     linear,
     left top,
     right bottom,
     from(#7dd56f),
     to(#28b487)
   );
-  background-image: linear-gradient(to right bottom, #7dd56f, #28b487);
+  background-image: linear-gradient(to right bottom, #7dd56f, #28b487); */
   opacity: 0.7;
 }
 .card__picture-img {
