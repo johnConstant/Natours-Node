@@ -7,7 +7,6 @@ const {
   deleteUser,
 } = require('../controllers/usersController');
 const { signup, login } = require('../controllers/authenticationController');
-
 const router = express.Router();
 
 router.post('/signup', signup);
