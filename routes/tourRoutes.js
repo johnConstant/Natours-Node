@@ -15,9 +15,14 @@ const {
   protect,
   restrictTo,
 } = require('../controllers/authenticationController');
+const reviewRouter = require('../routes/reviewRoutes');
 
 const router = express.Router();
 
+// router
+//   .route('/:tourId/reviews')
+//   .post(protect, restrictTo('user'), createAReview);
+router.use('/:tourId/reviews', reviewRouter);
 // router.param('id', checkId);
 router.route('/top-5-cheapest').get(aliasTopTours, getAllTours);
 router.route('/tour-stats').get(getTourStats);
