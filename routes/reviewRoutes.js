@@ -14,11 +14,17 @@ const {
 
 const router = express.Router({ mergeParams: true });
 
+router.use(protect);
+
 router
   .route('/')
   .get(getAllReviews)
-  .post(protect, restrictTo('admin', 'user'), setTourUserIds, createAReview);
+  .post(restrictTo('admin', 'user'), setTourUserIds, createAReview);
 
-router.route('/:id').get(getAReview).patch(updateAReview).delete(deleteAReview);
+router
+  .route('/:id')
+  .get(getAReview)
+  .patch(restrictTo('admin', 'user'), updateAReview)
+  .delete(restrictTo('admin', 'user'), deleteAReview);
 
 module.exports = router;

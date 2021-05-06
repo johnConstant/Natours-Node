@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
 // const User = require('./userModel');
-const Review = require('../models/reviewModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -110,6 +109,12 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+// Single field index
+//tourSchema.index({ price: 1 });
+
+// Compound Index
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;

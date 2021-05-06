@@ -15,6 +15,7 @@ const {
   forgotPassword,
   resetPassword,
   updatePassword,
+  restrictTo,
 } = require('../controllers/authenticationController');
 const { protect } = require('../controllers/authenticationController');
 
@@ -25,10 +26,16 @@ router.post('/login', login);
 
 router.post('/forgot-password', forgotPassword);
 router.patch('/reset-password/:token', resetPassword);
-router.get('/my-account', protect, getMe, getUser);
-router.patch('/update-my-password/', protect, updatePassword);
-router.patch('/update-my-account/', protect, updateMe);
-router.delete('/delete-my-account/', protect, deleteMe);
+
+// Because middleware runs in sequence any routes after this middleware will be protected
+router.use(protect);
+
+router.get('/my-account', getMe, getUser);
+router.patch('/update-my-password/', updatePassword);
+router.patch('/update-my-account/', updateMe);
+router.delete('/delete-my-account/', deleteMe);
+// Because middleware runs in sequence any routes after this middleware will be restricted
+router.use(restrictTo('admin'));
 
 router.route('/').get(getAllUsers).post(createUser);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);

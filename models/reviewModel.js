@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -43,18 +44,44 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  }
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: 0,
+    ratingsAverage: 4.5,
+  });
+};
+
+reviewSchema.post('save', function () {
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  this.r = await this.findOne();
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  await this.r.constructor.calcAverageRatings(this.r.tour);
+});
 const Review = mongoose.model('Review', reviewSchema);
-
-// const testReview = new Review({
-//   review: 'It was great!',
-//   rating: 599,
-//   tour: '5c88fa8cf4afda39709c296c',
-//   user: '607f42f99c78b213ed559900'
-// });
-
-// testReview
-//   .save()
-//   .then((document) => console.log(document))
-//   .catch((err) => console.log(`Error: ${err}`));
 
 module.exports = Review;
