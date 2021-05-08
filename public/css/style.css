@@ -144,7 +144,7 @@ body {
 .heading-tertirary {
   color: #fff;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 300;
 }
 .heading-primary span,
 .heading-tertirary span {
@@ -156,13 +156,12 @@ body {
     linear,
     left top,
     right bottom,
-    from(rgba(153, 153, 153, 0.1)),
-    to(rgba(0, 0, 0, 1))
+    from(#7dd56f),
+    to( #28b487)
   );
   background-image: linear-gradient(
     to bottom right,
-    rgba(53, 53, 53, 0.1),
-    rgba(0, 0, 0, 1)
+    #7dd56f, #28b487
   );
 }
 
