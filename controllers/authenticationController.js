@@ -37,6 +37,18 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+exports.logout = (req, res) => {
+  const cookieOptions = {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  };
+  res.cookie('jwt', 'logged out', cookieOptions);
+
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
@@ -69,7 +81,10 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
+
   if (!token) {
     return next(
       new AppError(
@@ -101,6 +116,34 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = freshUser;
   next();
 });
+
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    if (req.cookies.jwt) {
+      // Verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+      // Check if user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+      // Check if User has changed their password since token has been issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+      // There is a logged in user
+      res.locals.user = currentUser;
+      return next();
+    }
+  } catch (error) {
+    return next();
+  }
+
+  next();
+};
 
 exports.restrictTo = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
@@ -138,7 +181,7 @@ exports.forgotPassword = async (req, res, next) => {
       status: 'success',
       message: 'Token sent to email',
     });
-  } catch {
+  } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
@@ -146,7 +189,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     return next(
       new AppError(
-        'There was an error sending the email. Please try again later',
+        'There was an er ror sending the email. Please try again later',
         500
       )
     );
