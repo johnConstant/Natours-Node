@@ -22,32 +22,44 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  }
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message,
   });
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (err, req, res) => {
   // Operational Errors, trusted error: send message to the client
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-    // Programming or other unknown error: don't leak error details
-  } else {
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+      // Programming or other unknown error: don't leak error details
+    }
     // Log error to console
     // console.log('Error: ', err);
     // Send generic message
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Uh-oh! Something has gone wrong!',
     });
   }
+
+  return res.status(err.statusCode).render('error', {
+    title: 'Uh-oh! Something went wrong!',
+    msg: err.message,
+  });
 };
 
 module.exports = (err, req, res, next) => {
@@ -57,7 +69,7 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     // console.log(err.name);
 
@@ -73,6 +85,6 @@ module.exports = (err, req, res, next) => {
       error.name === 'TokenExpiredError'
     )
       (error) => handleJWTError();
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };
