@@ -8,6 +8,8 @@ const {
   updateMe,
   deleteMe,
   getMe,
+  uploadUserPhoto,
+  resizePhoto,
 } = require('../controllers/usersController');
 const {
   signup,
@@ -34,7 +36,7 @@ router.use(protect);
 
 router.get('/my-account', getMe, getUser);
 router.patch('/update-my-password/', updatePassword);
-router.patch('/update-my-account/', updateMe);
+router.patch('/update-my-account/', uploadUserPhoto, resizePhoto, updateMe);
 router.delete('/delete-my-account/', deleteMe);
 // Because middleware runs in sequence any routes after this middleware will be restricted
 router.use(restrictTo('admin'));
