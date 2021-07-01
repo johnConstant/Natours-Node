@@ -53,7 +53,6 @@ exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
   const url = `${req.protocol}://${req.get('host')}/my-account`;
-  console.log(url);
   await new Email(newUser, url).sendWelcome();
 
   createSendToken(newUser, 201, res);
@@ -169,11 +168,7 @@ exports.forgotPassword = async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetUrl = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/users/reset-password/${resetToken}`;
-
-  const message = `Forgot your password? Submit a PATCH request with your new password to the ${resetUrl}. \nIf you didn't forget your password you can ignore this email`;
+  // const message = `Forgot your password? Submit a PATCH request with your new password to the ${resetUrl}. \nIf you didn't forget your password you can ignore this email`;
 
   try {
     // await sendEmail({
@@ -181,6 +176,11 @@ exports.forgotPassword = async (req, res, next) => {
     //   subject: 'Your password reset token',
     //   message,
     // });
+    const resetUrl = `${req.protocol}://${req.get(
+      'host'
+    )}/api/v1/users/reset-password/${resetToken}`;
+
+    await new Email(user, resetUrl).sendPasswordReset();
 
     res.status(200).json({
       status: 'success',
